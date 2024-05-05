@@ -33,7 +33,6 @@ function start_server() {
                 modify_config
                 start_server
             else
-                read -p "$(echo -e "${CYAN}fff. ${NC}")"
                 launch_server
             fi
         else
@@ -48,9 +47,12 @@ function start_server() {
     fi
 }
 
+# 2 Stop tModLoader
 function stop_server() {
     clear
+    sleep 1
     screen -S tml-manager -p 0 -X stuff 'exit\n'
+    sleep 1
     read -p "$(echo -e "${CYAN}Server stopped successfully! Press enter to continue. ${NC}")"
     main_menu
 }
@@ -78,6 +80,7 @@ function modify_config() {
     sed -i "/^#*password/c\password=$v_pass" "$tml_dir/serverconfig.txt"
 }
 
+# 5 Manage Worlds
 function manage_worlds() {
     clear
     local choice
@@ -109,12 +112,29 @@ function manage_worlds() {
     esac
 }
 
+# 6 Update script
+function update_script () {
+    echo "$1" # arguments are accessible through $1, $2,...
+}
+
+
 function launch_server() {
+
+    local port=$(grep "port=" $tml_dir/serverconfig.txt | cut -d'=' -f2)
+
     chmod +x $tml_dir/LaunchUtils/ScriptCaller.sh
     # TODO: replace with $tml_dir
+    sleep 1
     screen -S tml-manager -p 0 -X stuff 'cd /root/.local/share/Terraria/\n'
-    screen -S tml-manager -p 0 -X stuff 'bash ./LaunchUtils/ScriptCaller.sh -server -config serverconfig.txt\n'
-    echo uee
+    screen -S tml-manager -p 0 -X stuff 'bash /root/.local/share/Terraria/LaunchUtils/ScriptCaller.sh -server -config serverconfig.txt\n'
+    sleep 1
+    # Waiting for $port to open
+    echo "Starting..."
+    while ! nc -z localhost $port; do
+        sleep 1
+    done
+    read -p "$(echo -e "${CYAN}Server started! Press enter to back to Menu. ${NC}")"
+    main_menu
 }
 
 function main_menu() {
@@ -135,7 +155,7 @@ function main_menu() {
     echo "╠════════════════════════════════════════════════════════════════════════╣"
     echo -e "║ ${CYAN}[1]${NC}  Start Server                      ${CYAN}[2]${NC}  Stop Server                ║"
     echo -e "║ ${CYAN}[3]${NC}  Install/Update Server             ${CYAN}[4]${NC}  Modify Server Configs      ║"
-    echo -e "║ ${CYAN}[5]${NC}  Manage Worlds                     ${CYAN}[4]${NC}  Modify Server Configs      ║"
+    echo -e "║ ${CYAN}[5]${NC}  Manage Worlds                     ${CYAN}[6]${NC}  Update Script              ║"
     echo -e "║ ${CYAN}[21]${NC} Uninstall                         ${CYAN}[0]${NC}  Exit                       ║"
     echo "╚════════════════════════════════════════════════════════════════════════╝"
 
@@ -160,6 +180,9 @@ function main_menu() {
         ;;
     5)
         manage_worlds
+        ;;
+    6)
+        update_script
         ;;
     *)
         main_menu
