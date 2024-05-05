@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Changeable Variables
+# Variables
 tml_dir=/root/.local/share/Terraria/
 tmp_dir=/root/.local/share/Terraria/Temp/
-
-# NOT Changeable Variables
 release_url=$(curl -s https://api.github.com/repos/tModLoader/tModLoader/releases/latest | grep browser_download_url | grep tModLoader.zip | cut -d '"' -f 4)
 
 # Menu/Color inspired by https://github.com/TheyCallMeSecond/sing-box-manager
@@ -16,6 +14,7 @@ NC='\033[0m'
 # 1 Start tModLoader
 function start_server() {
     clear
+    local is_exist=false
     # Check if tModLoader installed
     if [ -f "$tml_dir/start-tModLoaderServer.sh" ]; then
         # Check if "tml-manager" screen session exists
@@ -24,14 +23,17 @@ function start_server() {
             while IFS= read -r line; do
                 # Use "#port=" to judge
                 if [[ "$line" == *"#port="* ]]; then
-                    local is_exist=true
+                    is_exist=true
+                    echo exist
                     break
                 fi
             done < "$tml_dir/serverconfig.txt"
-            if [ is_exist ]; then
+            if [ -e "is_exist" ]; then
                 read -p "$(echo -e "${CYAN}You haven't configure tModLoader, press enter to configure. ${NC}")"
                 modify_config
+                start_server
             else
+                read -p "$(echo -e "${CYAN}fff. ${NC}")"
                 launch_server
             fi
         else
@@ -65,13 +67,54 @@ function update_tml() {
 
 # 4 Modify configs
 function modify_config() {
+    clear
     read -p "Maximum number of players: " v_max
     read -p "Port of server: " v_port
     read -p "Password of server(Press enter to none): " v_pass
+
+    # Modify server configs
+    sed -i "/^#*maxplayers/c\maxplayers=$v_max" "$tml_dir/serverconfig.txt"
+    sed -i "/^#*port/c\port=$v_port" "$tml_dir/serverconfig.txt"
+    sed -i "/^#*password/c\password=$v_pass" "$tml_dir/serverconfig.txt"
+}
+
+function manage_worlds() {
+    clear
+    local choice
+    echo "╔════════════════════════════════════════════════════════════════════════╗"
+    echo -e "║ ${CYAN}[1]${NC}  Select World                      ${CYAN}[2]${NC}  Create World               ║"
+    echo -e "║ ${CYAN}[3]${NC}  Delete World                      ${CYAN}[0]${NC}  Back to Menu               ║"
+    echo "╚════════════════════════════════════════════════════════════════════════╝"
+
+    read -p "select the option:" choice
+    case $choice in
+    0)
+        main_menu
+        ;;
+    1)
+        clear
+        echo -e "Your Worlds:" 
+        echo -e "${CYAN}$(find "/root/.local/share/Terraria/tModLoader/Worlds" -type f -name "*.wld" -exec basename {} .wld \;)${NC}"
+        read -p "Type in the name of the world you want to play: " v_world
+        sed -i "/^#*world/c\world="$tml_dir"tModLoader/Worlds/"$v_world".wld" "$tml_dir/serverconfig.txt"
+        read -p "$(echo -e "${CYAN}Changed successfully! Press enter to back to Menu. ${NC}")"
+        main_menu
+        ;;
+    2)
+        exit 0
+        ;;
+    3)
+        exit 0
+        ;;
+    esac
 }
 
 function launch_server() {
-    screen -S tml-manager -p 0 -X stuff 'bash "$tml_dir/start-tModLoader.sh"\n'
+    chmod +x $tml_dir/LaunchUtils/ScriptCaller.sh
+    # TODO: replace with $tml_dir
+    screen -S tml-manager -p 0 -X stuff 'cd /root/.local/share/Terraria/\n'
+    screen -S tml-manager -p 0 -X stuff 'bash ./LaunchUtils/ScriptCaller.sh -server -config serverconfig.txt\n'
+    echo uee
 }
 
 function main_menu() {
@@ -92,6 +135,7 @@ function main_menu() {
     echo "╠════════════════════════════════════════════════════════════════════════╣"
     echo -e "║ ${CYAN}[1]${NC}  Start Server                      ${CYAN}[2]${NC}  Stop Server                ║"
     echo -e "║ ${CYAN}[3]${NC}  Install/Update Server             ${CYAN}[4]${NC}  Modify Server Configs      ║"
+    echo -e "║ ${CYAN}[5]${NC}  Manage Worlds                     ${CYAN}[4]${NC}  Modify Server Configs      ║"
     echo -e "║ ${CYAN}[21]${NC} Uninstall                         ${CYAN}[0]${NC}  Exit                       ║"
     echo "╚════════════════════════════════════════════════════════════════════════╝"
 
@@ -113,6 +157,9 @@ function main_menu() {
         ;;
     4)
         modify_config
+        ;;
+    5)
+        manage_worlds
         ;;
     *)
         main_menu
