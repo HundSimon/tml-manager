@@ -8,8 +8,6 @@ Use Root to run this script
 
 Packages used: `wget, screen`
 
-Only tested under Ubuntu
-
 Main dir: `/root/.local/share/Terraria/`
 
 - [x] Start server
@@ -18,3 +16,4 @@ Main dir: `/root/.local/share/Terraria/`
 - [x] Manage server configs
 - [ ] Manage worlds
 - [ ] Proper ways to deal with errors
+- [ ] Steam support(with official script)
