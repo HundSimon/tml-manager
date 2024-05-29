@@ -100,12 +100,17 @@ manage_worlds() {
         ;;
     1)
         clear
-        echo -e "Your Worlds:" 
-        echo -e "${CYAN}$(find "/root/.local/share/Terraria/tModLoader/Worlds" -type f -name "*.wld" -exec basename {} .wld \;)${NC}"
-        read -p "Type in the name of the world you want to play: " v_world
+        echo -e "Your Worlds:"
+        worlds=($(find "/root/.local/share/Terraria/tModLoader/Worlds" -type f -name "*.wld" -exec basename {} .wld \;))
+        for i in "${!worlds[@]}"; do 
+            echo -e "${CYAN}$((i+1)): ${worlds[$i]}${NC}"
+        done
+        read -p "Type in the index of the world you want to play: " v_index
+        v_world=${worlds[$((v_index-1))]}
         sed -i "/^#*world/c\world="$tmodloader_directory"/tModLoader/Worlds/"$v_world".wld" "$tmodloader_directory/serverconfig.txt"
         echo -e "${CYAN}Changed successfully! Press enter to back to Menu. ${NC}"
         read
+
         main_menu
         ;;
     2)
