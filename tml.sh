@@ -22,11 +22,14 @@ start_server() {
             # Check if serverconfig.txt is modified
             while IFS= read -r line; do
                 # Use "#port=" to judge
-                if [[ "$line" == *"#port="* ]]; then
-                    is_configured=true
+                if [[ "$line" =~ ^#port=[0-9]+ ]]; then
+                    is_configured=false
                     break
+                else
+                    is_configured=true
                 fi
             done < "$tmodloader_directory/serverconfig.txt"
+
             if ! $is_configured; then
                 echo -e "${CYAN}You haven't configured tModLoader, press enter to configure. ${NC}"
                 read
@@ -34,8 +37,8 @@ start_server() {
                 start_server
             else
                 launch_server
-            fi
-        else
+            fi        
+    else
             echo -e "${CYAN}Initialize session first${NC}"
             screen -dmS tml-manager
             echo -e "${CYAN}Initialized successfully! Press enter to continue. ${NC}"
@@ -128,12 +131,12 @@ update_script () {
 }
 
 launch_server() {
-
-    local port=$(grep "port=" $tmodloader_directory/serverconfig.txt | cut -d'=' -f2)
+    local port=$(grep -m1 "port=" $tmodloader_directory/serverconfig.txt | cut -d'=' -f2)
 
     chmod +x $tmodloader_directory/LaunchUtils/ScriptCaller.sh
     sleep 1
     screen -S tml-manager -p 0 -X stuff 'cd /root/.local/share/Terraria/\n'
+    sleep 1
     screen -S tml-manager -p 0 -X stuff 'bash /root/.local/share/Terraria/LaunchUtils/ScriptCaller.sh -server -config serverconfig.txt\n'
     sleep 1
     echo "Starting..."
@@ -144,6 +147,7 @@ launch_server() {
     read
     main_menu
 }
+
 
 main_menu() {
     clear
