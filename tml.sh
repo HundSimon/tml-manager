@@ -171,7 +171,9 @@ manage_worlds() {
 
 # 6 Update script
 update_script () {
-    wget -P /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh -O
+    wget -P /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh
+    wget -P -O /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh
+    main_menu
 }
 
 launch_server() {
