@@ -11,6 +11,17 @@ CYAN='\033[0;36m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
+# Initialize
+if [ -f "/etc/tml-manager/tml.sh" ]; then
+    break
+else
+    mkdir /etc/tml-manager
+    mv tml.sh /etc/tml-manager
+    ln -s /etc/tml-manager/tml.sh /usr/bin/tml
+    chmod 700 /usr/bin/tml
+fi
+
+
 # Install dependencies 
 dependencies=("curl" "wget" "screen" "netcat")
 
@@ -201,6 +212,7 @@ main_menu() {
     echo -e "║ ${CYAN}[5]${NC}  Manage Worlds                     ${CYAN}[6]${NC}  Update Script              ║"
     echo -e "║ ${CYAN}[21]${NC} Uninstall                         ${CYAN}[0]${NC}  Exit                       ║"
     echo "╚════════════════════════════════════════════════════════════════════════╝"
+    echo -e "${YELLOW}Tips: Use 'tml' to execute this script${NC}"
 
     local choice
     read -p "Please select [0-21]: " choice
