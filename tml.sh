@@ -126,6 +126,9 @@ modify_config() {
     sed -i "/^#*maxplayers/c\maxplayers=$v_max" "$tmodloader_directory/serverconfig.txt"
     sed -i "/^#*port/c\port=$v_port" "$tmodloader_directory/serverconfig.txt"
     sed -i "/^#*password/c\password=$v_pass" "$tmodloader_directory/serverconfig.txt"
+    echo -e "${CYAN}Config modified successfully! Press enter to continue. ${NC}"
+    read
+    main_menu
 }
 
 # 5 Manage Worlds
