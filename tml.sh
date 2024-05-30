@@ -16,7 +16,7 @@ if [ -f "/etc/tml-manager/tml.sh" ]; then
     break
 else
     mkdir /etc/tml-manager
-    mv tml.sh /etc/tml-manager
+    mv -f tml.sh /etc/tml-manager
     ln -s /etc/tml-manager/tml.sh /usr/bin/tml
     chmod 700 /usr/bin/tml
 fi
@@ -171,7 +171,7 @@ manage_worlds() {
 
 # 6 Update script
 update_script () {
-    wget -P /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh
+    wget -P /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh -O
 }
 
 launch_server() {
