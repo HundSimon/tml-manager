@@ -11,6 +11,37 @@ CYAN='\033[0;36m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
+# Install dependencies 
+dependencies=("curl" "wget" "screen" "netcat")
+
+install_deps() {
+    for dep in "${dependencies[@]}"; do
+        if ! command -v "$dep" &> /dev/null; then
+            sudo $1 install -y "$dep"
+        fi
+    done
+}
+
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case $ID in
+        debian|ubuntu|linuxmint)
+            install_deps "apt-get"
+            ;;
+        centos|fedora|rhel)
+            install_deps "yum"
+            ;;
+        arch|manjaro)
+            install_deps "pacman -S --noconfirm"
+            ;;
+        *)
+            echo "Unsupported distribution. Please install the dependencies manually."
+            ;;
+    esac
+else
+    echo "Can't detect the Linux distribution. Please install the dependencies manually."
+fi
+
 # 1 Start tModLoader
 start_server() {
     clear
