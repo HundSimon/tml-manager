@@ -4,6 +4,10 @@
 
 Manage your tModLoader Server easier
 
+## Install
+
+`wget -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh && bash tml.sh`
+
 Use Root to run this script
 
 Packages used: `wget, screen`

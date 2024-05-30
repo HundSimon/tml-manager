@@ -21,7 +21,6 @@ else
     chmod 700 /usr/bin/tml
 fi
 
-
 # Install dependencies 
 dependencies=("curl" "wget" "screen" "netcat")
 
@@ -169,7 +168,7 @@ manage_worlds() {
 
 # 6 Update script
 update_script () {
-    echo "working in progress"
+    wget -P /etc/tml-manager -N --no-check-certificate https://raw.githubusercontent.com/HundSimon/tml-manager/main/tml.sh
 }
 
 launch_server() {
